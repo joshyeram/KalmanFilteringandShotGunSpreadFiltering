@@ -43,6 +43,16 @@ def do(control, measurement, init, scaler):
 
     return
 
+def guess(control, init):
+    x0 = init[0]
+    y0 = init[1]
+    location = []
+    for i in control:
+        x0 += i[0]
+        y0 += i[1]
+        location.append((x0,y0))
+    return location
+
 if __name__ == "__main__":
     # Retrive file name for input data
     if (len(sys.argv) < 5):
@@ -76,5 +86,8 @@ if __name__ == "__main__":
     print(control)
     print(measurement)
 
-    #draw(measurement, None)
+    measurement.insert(0, (0,0))
+    g = guess(control, (x0, y0))
+    g.insert(0,(0,0))
+    draw(measurement, g)
     
