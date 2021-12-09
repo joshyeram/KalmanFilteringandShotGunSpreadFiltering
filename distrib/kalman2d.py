@@ -92,8 +92,8 @@ if __name__ == "__main__":
         control.append((i[0],i[1]))
         measurement.append((i[2], i[3]))
 
-    print(control)
-    print(measurement)
+    #print(control)
+    #print(measurement)
 
     Q = np.array([[0.0001, 0.00002], [0.00002, 0.0001]])
     R = np.array([[0.01, 0.005], [0.005, 0.02]])
@@ -105,6 +105,7 @@ if __name__ == "__main__":
     H = np.identity(2)
     A = np.identity(2)
     B = np.identity(2)
+
     for i in range(len(data)):
         u = np.array([[data[i][0]],[data[i][1]]])
         (x, P) = kalmanFilterTimeUpdate(x, A, B, u, P, Q)
@@ -115,4 +116,4 @@ if __name__ == "__main__":
     measurement.insert(0, (x0, y0))
     updated.insert(0, (x0, y0))
     draw(measurement, updated)
-    
+
