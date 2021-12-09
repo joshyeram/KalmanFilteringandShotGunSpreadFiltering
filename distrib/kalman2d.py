@@ -1,4 +1,47 @@
 import sys
+import matplotlib.pyplot as plt
+
+def drawMeasurement(coords):
+    if (coords == None):
+        return
+    for i in range(len(coords) - 1):
+        x = [coords[i][0], coords[i + 1][0]]
+        y = [coords[i][1], coords[i + 1][1]]
+        plt.plot(x, y, 'yo', linestyle='solid', markersize=1)
+    plt.show(block=False)
+    return
+def drawCorrected(coords):
+    if(coords == None):
+        return
+    for i in range(len(coords) - 1):
+        x = [coords[i][0], coords[i + 1][0]]
+        y = [coords[i][1], coords[i + 1][1]]
+        plt.plot(x, y, 'bo', linestyle='solid', markersize=1)
+    plt.show(block=False)
+    return
+
+def draw(measurement, corrected):
+    fig = plt.figure()
+    axis = fig.gca()
+    axis.spines["top"].set_linewidth(1.5)
+    axis.spines["right"].set_linewidth(1.5)
+    axis.spines["left"].set_linewidth(1.5)
+    axis.spines["bottom"].set_linewidth(1.5)
+    plt.xlim(-10, 10)
+    plt.ylim(-10, 10)
+    plt.gca().set_aspect('equal', adjustable='box')
+    drawMeasurement(measurement)
+    drawCorrected(corrected)
+    plt.show()
+    return
+
+def do(control, measurement, init, scaler):
+    x0 = init[0]
+    y0 = init[1]
+    Q = None
+    R = None
+
+    return
 
 if __name__ == "__main__":
     # Retrive file name for input data
@@ -7,8 +50,8 @@ if __name__ == "__main__":
         exit()
 
     filename = sys.argv[1]
-    x10 = float(sys.argv[2])
-    x20 = float(sys.argv[3])
+    x0 = float(sys.argv[2])
+    y0 = float(sys.argv[3])
     scaler = float(sys.argv[4])
 
     # Read data
@@ -29,4 +72,9 @@ if __name__ == "__main__":
     for i in data:
         control.append((i[0],i[1]))
         measurement.append((i[2], i[3]))
+
+    print(control)
+    print(measurement)
+
+    #draw(measurement, None)
     
