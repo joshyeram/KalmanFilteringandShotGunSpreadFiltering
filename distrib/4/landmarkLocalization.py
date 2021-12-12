@@ -34,6 +34,12 @@ def drawRobot(coords):
     plt.show(block=False)
     return
 
+def drawGroundTruth(coords):
+    xi, yi, rot = zip(*coords)
+    plt.plot(xi,yi,color="black", markersize=1)
+    plt.show(block=False)
+    return
+
 def readEnv(fileName):
     file = open(fileName, "r")
     temp = int(file.readline())
@@ -44,7 +50,17 @@ def readEnv(fileName):
         pos.append((float(s[0]),float(s[1])))
     return np.array(pos)
 
-def drawEnv(coords, env):
+def readGroundTruth(fileName):
+    file = open(fileName, "r")
+    temp = int(file.readline())
+    pos = []
+    for i in range(temp):
+        t = file.readline().rstrip("\n")
+        s = t.split(" ")
+        pos.append((float(s[0]), float(s[1]), float(s[2])))
+    return np.array(pos)
+
+def drawEnv(coords, env, truth):
     fig = plt.figure()
     axis = fig.gca()
     axis.spines["top"].set_linewidth(1.5)
@@ -60,8 +76,11 @@ def drawEnv(coords, env):
     for i in env:
         plt.plot(i[0],i[1], ".", color = "black", markersize=10)
 
+    drawGroundTruth(truth)
+
     plt.show()
     return
 
 env = readEnv("landmark_2.txt")
-drawEnv((50,50,0), env)
+truth = readGroundTruth("ground_truth_0.txt")
+drawEnv((50,50,0), env, truth)
