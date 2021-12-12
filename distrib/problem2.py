@@ -10,7 +10,7 @@ def problem2(N):
         sample.append(s)
     return sample
 
-temp = problem2(1000)
+temp = problem2(100)
 plt.hist(temp, 50, (-5,5))
-plt.title("N = 1000")
+plt.title("N = 100")
 plt.show()

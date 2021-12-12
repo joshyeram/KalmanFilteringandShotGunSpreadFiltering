@@ -30,8 +30,8 @@ def draw(measurement, corrected):
     axis.spines["right"].set_linewidth(1.5)
     axis.spines["left"].set_linewidth(1.5)
     axis.spines["bottom"].set_linewidth(1.5)
-    plt.xlim(-10, 10)
-    plt.ylim(-10, 10)
+    """plt.xlim(-10, 10)
+    plt.ylim(-10, 10)"""
     plt.gca().set_aspect('equal', adjustable='box')
     drawMeasurement(measurement)
     drawCorrected(corrected)
