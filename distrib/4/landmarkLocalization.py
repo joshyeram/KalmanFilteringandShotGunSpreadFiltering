@@ -82,5 +82,5 @@ def drawEnv(coords, env, truth):
     return
 
 env = readEnv("landmark_2.txt")
-truth = readGroundTruth("ground_truth_0.txt")
+truth = readGroundTruth("ground_truth_2.txt")
 drawEnv((50,50,0), env, truth)
