@@ -191,7 +191,7 @@ def particleFilter(landmark, measurement, particle):
             temp.append(bearing(j, env))
         for j in temp:
             prob.append(avgError(j, obv[i]))
-        pos = samples[prob.index(max(prob))]
+        pos = samples[prob.index(min(prob))]
         all.append(pos)
         x0 = pos[0]
         y0 = pos[1]
@@ -204,13 +204,21 @@ def bearing(pose, env):
     temp = []
     for j in env:
         b = math.atan2(j[1] - pose[1], j[0] - pose[0]) - pose[2]
+        while (b < 0):
+            b += np.pi * 2
+        b %= np.pi * 2
         temp.append(b)
     return temp
 
 def avgError(bearing, obs):
     temp = 0
     for i in range(len(bearing)):
-        temp += (abs(obs[i] - bearing[i])/obs[i])
+        t = obs[i] - bearing[i]
+        if(t> np.pi):
+            t-=np.pi
+        if (t < -np.pi):
+            t += np.pi
+        temp += (abs(t)/obs[i])
     return temp
 
 def particleSample(pose, trans, rot, k):
@@ -266,6 +274,7 @@ def drawParticle(coords, env, truth, odom, particle):
     drawGroundTruth(truth)
     drawOdom(odom)
     drawpart(particle)
+
     """for i in particle[1]:
         plt.plot(i[0],i[1], ".", color = "black", markersize=5)
     plt.plot(particle[0][0], particle[0][1], ".", color="yellow", markersize=10)
@@ -276,8 +285,7 @@ def drawParticle(coords, env, truth, odom, particle):
 
 
 
-#sample("landmark_1.txt","ground_truth_1.txt")
-
+#sample("landmark_2.txt","ground_truth_2.txt")
 
 route = particleFilter("landmark_2.txt", "measurement_2.txt", 100)
 
