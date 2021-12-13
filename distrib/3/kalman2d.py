@@ -9,7 +9,8 @@ def drawMeasurement(coords):
     for i in range(len(coords) - 1):
         x = [coords[i][0], coords[i + 1][0]]
         y = [coords[i][1], coords[i + 1][1]]
-        plt.plot(x, y, 'yo', linestyle='solid', markersize=1)
+        plt.plot(x, y, 'ro', linestyle='solid', markersize=1)
+    plt.plot(coords[0][0], coords[0][0], ".", color="red", markersize=1, label="Measurements")
     plt.show(block=False)
     return
 
@@ -20,6 +21,7 @@ def drawCorrected(coords):
         x = [coords[i][0], coords[i + 1][0]]
         y = [coords[i][1], coords[i + 1][1]]
         plt.plot(x, y, 'bo', linestyle='solid', markersize=1)
+    plt.plot(coords[0][0], coords[0][0], ".", color = "blue",  markersize=1, label = "Kalman Filter")
     plt.show(block=False)
     return
 
@@ -35,6 +37,7 @@ def draw(measurement, corrected):
     plt.gca().set_aspect('equal', adjustable='box')
     drawMeasurement(measurement)
     drawCorrected(corrected)
+    plt.legend()
     plt.show()
     return
 

@@ -99,6 +99,9 @@ def sample(enviro, groundTruth):
     file.close()
     return
 
+def particleFilter():
+    return
+
 def drawEnv(coords, env, truth):
     fig = plt.figure()
     axis = fig.gca()
