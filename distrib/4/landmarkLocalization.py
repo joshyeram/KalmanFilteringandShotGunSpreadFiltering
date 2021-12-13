@@ -3,7 +3,7 @@ import numpy as np
 from numpy.linalg import inv
 import math
 
-robot = (4,8)
+robot = (8,4)
 
 def transform(coords):
     width = robot[0]
@@ -79,7 +79,6 @@ def sample(enviro, groundTruth):
     tempMake = []
     for i in range(len(gt)-1):
         diff = np.subtract(gt[i+1], gt[i])
-        print(diff)
         trans = np.sqrt(diff[0]**2 + diff[1]**2)
         rot = diff[2]
         while (rot < 0):
@@ -92,7 +91,7 @@ def sample(enviro, groundTruth):
         sR2 = np.random.normal(rot, .1)
         tempMake.append((sR, sT, sR2))
     tempObs = []
-    for i in range(len(gt) - 1):
+    for i in range(1,len(gt)):
         tempB = []
         for j in env:
             b = math.atan2(j[1] - gt[i][1], j[0] - gt[i][0]) - gt[i][2]
@@ -187,6 +186,7 @@ def particleFilter(landmark, measurement, particle):
         trans = odom[i][1]
         rot = odom[i][0]
         samples = particleSample((x0, y0, r0), trans, rot, particle)
+        #samples = [(50.296, 49.904, 5.9),(50.2, 49.9, 5.89),(50.3, 50.1, .1),(50.28146311952254 ,49.89341963677278, 5.921204956923461)]
         for j in samples:
             temp.append(bearing(j, env))
         for j in temp:
@@ -214,11 +214,12 @@ def avgError(bearing, obs):
     temp = 0
     for i in range(len(bearing)):
         t = obs[i] - bearing[i]
-        if(t> np.pi):
-            t-=np.pi
-        if (t < -np.pi):
-            t += np.pi
-        temp += (abs(t)/obs[i])
+        tPrime = bearing[i] - obs[i]
+        if(t>np.pi):
+            t-=np.pi*2
+        if (tPrime > np.pi):
+            tPrime -= np.pi * 2
+        temp += min(abs(t), abs(tPrime))/obs[i]
     return temp
 
 def particleSample(pose, trans, rot, k):
@@ -273,12 +274,14 @@ def drawParticle(coords, env, truth, odom, particle):
 
     drawGroundTruth(truth)
     drawOdom(odom)
-    drawpart(particle)
-
-    """for i in particle[1]:
-        plt.plot(i[0],i[1], ".", color = "black", markersize=5)
-    plt.plot(particle[0][0], particle[0][1], ".", color="yellow", markersize=10)
-    drawpart(particle[2])"""
+    if(len(particle)!=3):
+        drawpart(particle)
+    else:
+        for i in particle[1]:
+            plt.plot(i[0],i[1], ".", color = "black", markersize=5)
+            #plt.arrow(i[0],i[1], 5*np.cos(i[2]), 5*np.sin(i[2]))
+        plt.plot(particle[0][0], particle[0][1], ".", color="yellow", markersize=10)
+        drawpart(particle[2])
 
     plt.show()
     return
