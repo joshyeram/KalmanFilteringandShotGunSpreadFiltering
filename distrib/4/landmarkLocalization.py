@@ -340,34 +340,6 @@ def drawPF(coords, enviro, ground, measurement, pf):
     plt.show()
     return
 
-def drawParticle(coords, env, truth, odom, particle):
-    fig = plt.figure()
-    axis = fig.gca()
-    axis.spines["top"].set_linewidth(1.5)
-    axis.spines["right"].set_linewidth(1.5)
-    axis.spines["left"].set_linewidth(1.5)
-    axis.spines["bottom"].set_linewidth(1.5)
-    plt.xlim(0, 100)
-    plt.ylim(0, 100)
-    plt.gca().set_aspect('equal', adjustable='box')
-
-    drawRobot(coords)
-
-    for i in env:
-        plt.plot(i[0],i[1], ".", color = "black", markersize=10)
-
-    drawGroundTruth(truth)
-    drawOdom(odom)
-    if(len(particle)!=3):
-        drawPart(particle)
-    else:
-        for i in particle[1]:
-            plt.plot(i[0],i[1], ".", color = "black", markersize=5)
-            #plt.arrow(i[0],i[1], 5*np.cos(i[2]), 5*np.sin(i[2]))
-        plt.plot(particle[0][0], particle[0][1], ".", color="yellow", markersize=10)
-        drawPart(particle[2])
-    plt.show()
-    return
 
 
 
