@@ -345,24 +345,16 @@ def drawPF(coords, enviro, ground, measurement, pf):
 
 #sample("landmark_2.txt","ground_truth_2.txt")
 
-"""route = particleFilter("landmark_2.txt", "measurement_2.txt", 100)
-
-env = readEnv("landmark_2.txt")
-truth = readGroundTruth("ground_truth_2.txt")
-measurement = readMeasurementOdom("measurement_2.txt")
-drawEnv((50,50,0), env, truth, route)
-#drawParticle((50,50,0), env, truth, measurement, route)"""
-
-env = "landmark_2.txt"
+"""env = "landmark_2.txt"
 truth = "ground_truth_2.txt"
 measurement = "measurement_2.txt"
 pf = "PF_estimate_2.txt"
 init = (50,50,0)
 
-#particleFilter(env, measurement, 100)
+particleFilter(env, measurement, 100)
 
-#drawLandmark(init,env)
-#drawGroundTruthEnv(init, env, truth)
-#drawNoisyOdom(init, env, truth, measurement)
-drawPF(init, env, truth, measurement,pf)
+drawLandmark(init,env)
+drawGroundTruthEnv(init, env, truth)
+drawNoisyOdom(init, env, truth, measurement)
+drawPF(init, env, truth, measurement, pf)"""
 
