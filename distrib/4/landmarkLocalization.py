@@ -358,9 +358,11 @@ truth = "ground_truth_2.txt"
 measurement = "measurement_2.txt"
 pf = "PF_estimate_2.txt"
 init = (50,50,0)
+
+#particleFilter(env, measurement, 100)
+
 #drawLandmark(init,env)
 #drawGroundTruthEnv(init, env, truth)
 #drawNoisyOdom(init, env, truth, measurement)
 drawPF(init, env, truth, measurement,pf)
 
-#particleFilter(env, measurement, 100)
