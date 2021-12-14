@@ -37,17 +37,17 @@ def drawRobot(coords):
 
 def drawGroundTruth(coords):
     xi, yi, rot = zip(*coords)
-    plt.plot(xi,yi,color="black", markersize=1)
+    plt.plot(xi,yi,color="blue", markersize=1)
     plt.show(block=False)
     return
 
 def drawOdom(coords):
     xi, yi, rot = zip(*coords)
-    plt.plot(xi,yi,color="blue", markersize=1)
+    plt.plot(xi,yi,color="red", markersize=1)
     plt.show(block=False)
     return
 
-def drawpart(coords):
+def drawPart(coords):
     xi, yi, rot = zip(*coords)
     plt.plot(xi,yi,color="gray", markersize=1)
     plt.show(block=False)
@@ -72,49 +72,6 @@ def readGroundTruth(fileName):
         s = t.split(" ")
         pos.append((float(s[0]), float(s[1]), float(s[2])))
     return np.array(pos)
-
-def sample(enviro, groundTruth):
-    env = readEnv(enviro)
-    gt = readGroundTruth(groundTruth)
-    tempMake = []
-    for i in range(len(gt)-1):
-        diff = np.subtract(gt[i+1], gt[i])
-        trans = np.sqrt(diff[0]**2 + diff[1]**2)
-        rot = diff[2]
-        while (rot < 0):
-            rot += np.pi * 2
-        rot %= np.pi * 2
-        sT = np.random.normal(trans, .1)
-        sR = np.random.normal(rot, .1)
-        if(sR<0):
-            sR += np.pi * 2
-        sR2 = np.random.normal(rot, .1)
-        tempMake.append((sR, sT, sR2))
-    tempObs = []
-    for i in range(1,len(gt)):
-        tempB = []
-        for j in env:
-            b = math.atan2(j[1] - gt[i][1], j[0] - gt[i][0]) - gt[i][2]
-            sB = np.random.normal(b, .0523)
-            while(sB<0):
-                sB += np.pi*2
-            sB %= np.pi*2
-            tempB.append(sB)
-        tempObs.append(tempB)
-    name = "measurement_"+enviro[enviro.find("_")+1: enviro.find(".")] + ".txt"
-    file = open(name, "w")
-    file.write(str(gt[0][0])+" "+str(gt[0][1])+" "+str(gt[0][2])+"\n")
-    file.write(str(len(gt))+"\n")
-    for i in range(len(tempMake)):
-        file.write(str(tempMake[i][0]) + " " + str(tempMake[i][1]) + " " + str(tempMake[i][2]) + "\n")
-        for j in range(len(tempObs[i])):
-            file.write(str(tempObs[i][j]))
-            if(j==(len(tempObs[i])-1)):
-                file.write("\n")
-            else:
-                file.write(" ")
-    file.close()
-    return
 
 def readMeasurementOdom(fileName):
     file = open(fileName, "r")
@@ -169,6 +126,49 @@ def readMeasurement(fileName):
 
     return (init, control, observ)
 
+def sample(enviro, groundTruth):
+    env = readEnv(enviro)
+    gt = readGroundTruth(groundTruth)
+    tempMake = []
+    for i in range(len(gt)-1):
+        diff = np.subtract(gt[i+1], gt[i])
+        trans = np.sqrt(diff[0]**2 + diff[1]**2)
+        rot = diff[2]
+        while (rot < 0):
+            rot += np.pi * 2
+        rot %= np.pi * 2
+        sT = np.random.normal(trans, .1)
+        sR = np.random.normal(rot, .1)
+        if(sR<0):
+            sR += np.pi * 2
+        sR2 = np.random.normal(rot, .1)
+        tempMake.append((sR, sT, sR2))
+    tempObs = []
+    for i in range(1,len(gt)):
+        tempB = []
+        for j in env:
+            b = math.atan2(j[1] - gt[i][1], j[0] - gt[i][0]) - gt[i][2]
+            sB = np.random.normal(b, .0523)
+            while(sB<0):
+                sB += np.pi*2
+            sB %= np.pi*2
+            tempB.append(sB)
+        tempObs.append(tempB)
+    name = "measurement_"+enviro[enviro.find("_")+1: enviro.find(".")] + ".txt"
+    file = open(name, "w")
+    file.write(str(gt[0][0])+" "+str(gt[0][1])+" "+str(gt[0][2])+"\n")
+    file.write(str(len(gt))+"\n")
+    for i in range(len(tempMake)):
+        file.write(str(tempMake[i][0]) + " " + str(tempMake[i][1]) + " " + str(tempMake[i][2]) + "\n")
+        for j in range(len(tempObs[i])):
+            file.write(str(tempObs[i][j]))
+            if(j==(len(tempObs[i])-1)):
+                file.write("\n")
+            else:
+                file.write(" ")
+    file.close()
+    return
+
 def particleFilter(landmark, measurement, particle):
     env = readEnv(landmark)
     m = readMeasurement(measurement)
@@ -186,7 +186,6 @@ def particleFilter(landmark, measurement, particle):
         trans = odom[i][1]
         rot = odom[i][0]
         samples = particleSample((x0, y0, r0), trans, rot, particle)
-        #samples = [(50.296, 49.904, 5.9),(50.2, 49.9, 5.89),(50.3, 50.1, .1),(50.28146311952254 ,49.89341963677278, 5.921204956923461)]
         for j in samples:
             temp.append(bearing(j, env))
         for j in temp:
@@ -196,9 +195,14 @@ def particleFilter(landmark, measurement, particle):
         x0 = pos[0]
         y0 = pos[1]
         r0 = pos[2]
-        if i == 10000:
+        if i == -1:
             return (pos, samples, all)
-    return all
+    file = open("PF_estimate_"+landmark[landmark.find("_")+1: landmark.find(".")] + ".txt", "w")
+    file.write(str(len(all))+"\n")
+    for i in all:
+        file.write(str(i[0]) + " " + str(i[1]) + " " + str(i[2])+"\n")
+    file.close()
+    #return all
 
 def bearing(pose, env):
     temp = []
@@ -235,7 +239,7 @@ def particleSample(pose, trans, rot, k):
         temp.append(msg)
     return temp
 
-def drawEnv(coords, env, truth, odom):
+def drawLandmark(coords, enviro):
     fig = plt.figure()
     axis = fig.gca()
     axis.spines["top"].set_linewidth(1.5)
@@ -247,12 +251,92 @@ def drawEnv(coords, env, truth, odom):
     plt.gca().set_aspect('equal', adjustable='box')
 
     drawRobot(coords)
+    env = readEnv(enviro)
+    plt.title("Landmark")
+    for i in env:
+        plt.plot(i[0], i[1], ".", color="black", markersize=10)
+    plt.show()
 
+def drawGroundTruthEnv(coords, enviro, ground):
+    fig = plt.figure()
+    axis = fig.gca()
+    axis.spines["top"].set_linewidth(1.5)
+    axis.spines["right"].set_linewidth(1.5)
+    axis.spines["left"].set_linewidth(1.5)
+    axis.spines["bottom"].set_linewidth(1.5)
+    plt.xlim(0, 100)
+    plt.ylim(0, 100)
+    plt.gca().set_aspect('equal', adjustable='box')
+    drawRobot(coords)
+    env = readEnv(enviro)
+    truth = readGroundTruth(ground)
     for i in env:
         plt.plot(i[0],i[1], ".", color = "black", markersize=10)
-
     drawGroundTruth(truth)
-    drawOdom(odom)
+    plt.plot(-200, -200, ".", color="black", label="Landmark", markersize=10)
+    plt.plot(-200, -200, ".", color="blue", label = "Ground Truth", markersize=10)
+    plt.title("Ground Truth")
+    #plt.savefig("groundtruth0.png")
+    plt.legend()
+    plt.show()
+    return
+
+def drawNoisyOdom(coords, enviro, ground, measurement):
+    fig = plt.figure()
+    axis = fig.gca()
+    axis.spines["top"].set_linewidth(1.5)
+    axis.spines["right"].set_linewidth(1.5)
+    axis.spines["left"].set_linewidth(1.5)
+    axis.spines["bottom"].set_linewidth(1.5)
+    plt.xlim(0, 100)
+    plt.ylim(0, 100)
+    plt.gca().set_aspect('equal', adjustable='box')
+    drawRobot(coords)
+    env = readEnv(enviro)
+    truth = readGroundTruth(ground)
+    mes = readMeasurementOdom(measurement)
+    for i in env:
+        plt.plot(i[0],i[1], ".", color = "black", markersize=10)
+    drawGroundTruth(truth)
+    drawOdom(mes)
+
+    plt.plot(-200, -200, ".", color="black", label="Landmark", markersize=10)
+    plt.plot(-200, -200, ".", color="blue", label = "Ground Truth", markersize=10)
+    plt.plot(-200, -200, ".", color="red", label="Noisy Odometry", markersize=10)
+
+    plt.title("Noisy Odometry and Ground Truth")
+    plt.legend()
+    plt.show()
+    return
+
+def drawPF(coords, enviro, ground, measurement, pf):
+    fig = plt.figure()
+    axis = fig.gca()
+    axis.spines["top"].set_linewidth(1.5)
+    axis.spines["right"].set_linewidth(1.5)
+    axis.spines["left"].set_linewidth(1.5)
+    axis.spines["bottom"].set_linewidth(1.5)
+    plt.xlim(0, 100)
+    plt.ylim(0, 100)
+    plt.gca().set_aspect('equal', adjustable='box')
+    drawRobot(coords)
+    env = readEnv(enviro)
+    truth = readGroundTruth(ground)
+    mes = readMeasurementOdom(measurement)
+    particle = readGroundTruth(pf)
+    for i in env:
+        plt.plot(i[0],i[1], ".", color = "black", markersize=10)
+    drawGroundTruth(truth)
+    drawOdom(mes)
+    drawPart(particle)
+
+    plt.plot(-200, -200, ".", color="black", label="Landmark", markersize=10)
+    plt.plot(-200, -200, ".", color="blue", label = "Ground Truth", markersize=10)
+    plt.plot(-200, -200, ".", color="red", label="Noisy Odometry", markersize=10)
+    plt.plot(-200, -200, ".", color="gray", label="Particle Filter", markersize=10)
+
+    plt.title("Particle Filter")
+    plt.legend()
     plt.show()
     return
 
@@ -275,14 +359,13 @@ def drawParticle(coords, env, truth, odom, particle):
     drawGroundTruth(truth)
     drawOdom(odom)
     if(len(particle)!=3):
-        drawpart(particle)
+        drawPart(particle)
     else:
         for i in particle[1]:
             plt.plot(i[0],i[1], ".", color = "black", markersize=5)
             #plt.arrow(i[0],i[1], 5*np.cos(i[2]), 5*np.sin(i[2]))
         plt.plot(particle[0][0], particle[0][1], ".", color="yellow", markersize=10)
-        drawpart(particle[2])
-
+        drawPart(particle[2])
     plt.show()
     return
 
@@ -290,10 +373,22 @@ def drawParticle(coords, env, truth, odom, particle):
 
 #sample("landmark_2.txt","ground_truth_2.txt")
 
-route = particleFilter("landmark_2.txt", "measurement_2.txt", 100)
+"""route = particleFilter("landmark_2.txt", "measurement_2.txt", 100)
 
 env = readEnv("landmark_2.txt")
 truth = readGroundTruth("ground_truth_2.txt")
 measurement = readMeasurementOdom("measurement_2.txt")
-#drawEnv((50,50,0), env, truth, route)
-drawParticle((50,50,0), env, truth, measurement, route)
+drawEnv((50,50,0), env, truth, route)
+#drawParticle((50,50,0), env, truth, measurement, route)"""
+
+env = "landmark_2.txt"
+truth = "ground_truth_2.txt"
+measurement = "measurement_2.txt"
+pf = "PF_estimate_2.txt"
+init = (50,50,0)
+#drawLandmark(init,env)
+#drawGroundTruthEnv(init, env, truth)
+#drawNoisyOdom(init, env, truth, measurement)
+drawPF(init, env, truth, measurement,pf)
+
+#particleFilter(env, measurement, 100)

@@ -10,7 +10,7 @@ def drawMeasurement(coords):
         x = [coords[i][0], coords[i + 1][0]]
         y = [coords[i][1], coords[i + 1][1]]
         plt.plot(x, y, 'ro', linestyle='solid', markersize=1)
-    plt.plot(coords[0][0], coords[0][0], ".", color="red", markersize=1, label="Measurements")
+    plt.plot(coords[0][0], coords[0][0], ".", color="red", markersize=1, label="Observations")
     plt.show(block=False)
     return
 
@@ -38,6 +38,7 @@ def draw(measurement, corrected):
     drawMeasurement(measurement)
     drawCorrected(corrected)
     plt.legend()
+    plt.savefig("kalman2D.png")
     plt.show()
     return
 
