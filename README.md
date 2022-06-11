@@ -35,3 +35,5 @@ Instead of implementing the known particle filtering model, a new filtering meth
 <p align="center">
   <img src="https://github.com/joshyeram/slam/blob/main/distrib/s4.png", width="1000"/>
 </p>
+
+In a 2d environment, this implementation is not optimal. A normal particle filtering algorithm is better as you may not need 100 samples. However, as dimensionality grows, this algorithm becomes more optimal as fewer samples are required
